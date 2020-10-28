@@ -1,0 +1,45 @@
+{
+  "parent": "forge:item/default",
+  "loader": "forge:composite",
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [ 90, 90, 0 ],
+      "translation": [ 0, 1, 3 ],
+      "scale": [ 0.20, 0.20, 0.20 ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [ 90, 90, 0 ],
+      "translation": [ 0, 1, 3 ],
+      "scale": [ 0.20, 0.20, 0.20 ]
+    },
+    "firstperson_righthand": {
+      "rotation": [ 0, 90, 0 ],
+      "translation": [ 0, 1, 3 ],
+      "scale": [ 0.20, 0.20, 0.20 ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [ 0, 90, 0 ],
+      "translation": [ 0, 1, 3 ],
+      "scale": [ 0.20, 0.20, 0.20 ]
+    },
+    "fixed": {
+      "rotation": [ 90, 90, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 0.05, 0.05, 0.05 ]
+    },
+    "gui": {
+      "rotation": [ 0, 0, 45 ],
+      "translation": [ 0, 3, 0 ],
+      "scale": [ 0.12, 0.20, 1 ]
+    }
+  },
+  "parts": {
+    "part1": {
+      "loader": "forge:obj",
+      "model": "kidvkid:models/item/railgun.obj",
+      "textures": {
+        "layer0": "kidvkid:item/railgun"
+      }
+    }
+  }
+}

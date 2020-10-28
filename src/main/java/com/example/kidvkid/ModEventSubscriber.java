@@ -2,6 +2,7 @@ package com.example.kidvkid;
 
 import com.example.kidvkid.init.ModBlocks;
 import com.example.kidvkid.init.ModItemGroups;
+import com.example.kidvkid.item.BaconItem;
 import com.example.kidvkid.item.ModdedSpawnEggItem;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.BlockItem;
@@ -20,9 +21,6 @@ public class ModEventSubscriber {
     @SubscribeEvent
     public static void onRegisterItems(RegistryEvent.Register<Item> event) {
         final IForgeRegistry<Item> registry = event.getRegistry();
-        registry.registerAll(
-            setup(new Item(new Item.Properties().group(ModItemGroups.MOD_ITEM_GROUP)), "exampleitem")
-        );
 
         ModBlocks.BLOCKS.getEntries().stream()
                 .map(RegistryObject::get)

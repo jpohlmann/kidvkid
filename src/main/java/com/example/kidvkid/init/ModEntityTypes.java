@@ -25,10 +25,20 @@ public final class ModEntityTypes {
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = new DeferredRegister<>(ForgeRegistries.ENTITIES, KidVKid.MODID);
 
     public static final String GIANT_WITHER_NAME = "giant_wither";
+    public static final String BACON_NAME = "bacon";
 
     public static final RegistryObject<EntityType<GiantWitherEntity>> GIANT_WITHER = ENTITY_TYPES.register(GIANT_WITHER_NAME, () ->
             EntityType.Builder.<GiantWitherEntity>create(GiantWitherEntity::new, EntityClassification.CREATURE)
                     .size(3.6F, 14.0F)
                     .build(new ResourceLocation(KidVKid.MODID, GIANT_WITHER_NAME).toString())
+    );
+    public static final RegistryObject<EntityType<BaconEntity>> BACON_ENTITY = ENTITY_TYPES.register(BACON_NAME, () ->
+            EntityType.Builder.<BaconEntity>create(BaconEntity::new, EntityClassification.MISC)
+                    //.setCustomClientFactory((spawnEntity, world) -> new BaconEntity(world))
+                    .setShouldReceiveVelocityUpdates(true)
+                    .setTrackingRange(24)
+                    .setUpdateInterval(60)
+                    .size(3.5F, 3.5F)
+                    .build(new ResourceLocation(KidVKid.MODID, BACON_NAME).toString())
     );
 }

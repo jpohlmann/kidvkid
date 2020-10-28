@@ -33,8 +33,8 @@ public final class ClientModEventSubscriber {
     public static void onFMLClientSetupEvent(final FMLClientSetupEvent event) {
         // Register Entity Renderers
         RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.GIANT_WITHER.get(), GiantWitherRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.BACON_ENTITY.get(), BaconEntityRenderer::new);
         LOGGER.debug("Registered Entity Renderers");
 
     }
-
 }

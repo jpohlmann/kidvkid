@@ -17,10 +17,27 @@ import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
+/**
+ * Summoning rod for giant wither mobs.  Swinging it will create one in the world.
+ */
 public class GiantWitherRodItem extends Item {
+    /**
+     * Default constructor
+     *
+     * @param builder
+     */
     public GiantWitherRodItem(Item.Properties builder) {
         super(builder);
     }
+
+    /**
+     * When we right click with this item, summon a giant wither where we clicked.
+     *
+     * @param worldIn
+     * @param playerIn
+     * @param handIn
+     * @return
+     */
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack itemstack = playerIn.getHeldItem(handIn);
         EntityType<?> entitytype = ModEntityTypes.GIANT_WITHER.get();

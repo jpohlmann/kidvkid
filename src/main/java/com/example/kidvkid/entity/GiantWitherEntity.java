@@ -7,6 +7,9 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextComponent;
 import net.minecraft.world.World;
 
+/**
+ * Our giant wither entity.
+ */
 public class GiantWitherEntity extends WitherEntity {
 
     public GiantWitherEntity(EntityType<? extends WitherEntity> p_i50226_1_, World p_i50226_2_) {

@@ -1,8 +1,10 @@
 package com.example.kidvkid.init;
 
 import com.example.kidvkid.KidVKid;
+import com.example.kidvkid.item.BaconItem;
 import com.example.kidvkid.item.GiantWitherRodItem;
 import com.example.kidvkid.item.ModdedSpawnEggItem;
+import com.example.kidvkid.item.RailgunItem;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.RegistryObject;
@@ -24,8 +26,9 @@ public final class ModItems {
 
     public static final DeferredRegister<Item> ITEMS = new DeferredRegister<>(ForgeRegistries.ITEMS, KidVKid.MODID);
 
-    // This is a very simple Item. It has no special properties except for being on our creative tab.
     public static final RegistryObject<ModdedSpawnEggItem> GIANT_WITHER_SPAWN_EGG = ITEMS.register("giant_wither_spawn_egg", () -> new ModdedSpawnEggItem(ModEntityTypes.GIANT_WITHER, 0xF0A5A2, 0xA9672B, new Item.Properties().group(ModItemGroups.MOD_ITEM_GROUP)));
     public static final RegistryObject<GiantWitherRodItem> GIANT_WITHER_ROD = ITEMS.register("giant_wither_rod", () -> new GiantWitherRodItem(new Item.Properties().group(ModItemGroups.MOD_ITEM_GROUP)));
+    public static final RegistryObject<RailgunItem> RAILGUN = ITEMS.register("railgun", () -> new RailgunItem(new Item.Properties().group(ModItemGroups.MOD_ITEM_GROUP)));
+    public static final RegistryObject<BaconItem> BACON = ITEMS.register("bacon", () -> new BaconItem());
 
 }
