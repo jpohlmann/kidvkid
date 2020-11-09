@@ -1,0 +1,12 @@
+{
+  "bacon_railgun_sound": {
+    "category": "player",
+    "subtitle": "kidvkid.entity.bacon",
+    "sounds": [ "kidvkid:entity/bacon" ]
+  },
+  "bacon_hit_sound": {
+    "category": "player",
+    "subtitle": "kidvkid.entity.splat",
+    "sounds": [ "kidvkid:entity/splat" ]
+  }
+}

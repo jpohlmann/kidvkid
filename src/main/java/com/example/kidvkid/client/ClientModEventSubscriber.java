@@ -3,9 +3,17 @@ package com.example.kidvkid.client;
 import com.example.kidvkid.KidVKid;
 import com.example.kidvkid.client.render.entity.*;
 import com.example.kidvkid.init.ModEntityTypes;
+import com.example.kidvkid.init.ModParticles;
+import com.example.kidvkid.particle.SmokeTrailParticle;
+import net.minecraft.client.Minecraft;
+import net.minecraft.particles.BasicParticleType;
+import net.minecraft.particles.ParticleType;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +42,17 @@ public final class ClientModEventSubscriber {
         // Register Entity Renderers
         RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.GIANT_WITHER.get(), GiantWitherRenderer::new);
         RenderingRegistry.registerEntityRenderingHandler(ModEntityTypes.BACON_ENTITY.get(), BaconEntityRenderer::new);
-        LOGGER.debug("Registered Entity Renderers");
 
+
+        LOGGER.debug("Registered Entity Renderers");
+    }
+    @SubscribeEvent
+    public static void registerParticleTypes(RegistryEvent.Register<ParticleType<?>> event) {
+        ModParticles.SMOKE_TRAIL.setRegistryName(KidVKid.MODID, "smoke_trail");
+        event.getRegistry().register(ModParticles.SMOKE_TRAIL);
+    }
+    @SubscribeEvent
+    public static void registerParticleFactories(ParticleFactoryRegisterEvent event) {
+        Minecraft.getInstance().particles.registerFactory(ModParticles.SMOKE_TRAIL, SmokeTrailParticle.Factory::new);
     }
 }

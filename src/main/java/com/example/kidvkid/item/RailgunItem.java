@@ -1,25 +1,31 @@
 package com.example.kidvkid.item;
 
+import com.example.kidvkid.KidVKid;
+import com.example.kidvkid.init.ModEntityTypes;
+import com.example.kidvkid.init.ModItems;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
-import net.minecraft.item.ArrowItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.item.*;
 import net.minecraft.stats.Stats;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.util.*;
+import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-public class RailgunItem extends Item {
+import java.util.function.Predicate;
+
+public class RailgunItem extends ShootableItem {
     private static final Logger LOGGER = LogManager.getLogger();
+
+    public static final Predicate<ItemStack> BACON = (p_220002_0_) -> (p_220002_0_.getItem() instanceof BaconItem);
+
     /**
      * Default constructor
      *
@@ -33,7 +39,9 @@ public class RailgunItem extends Item {
      * Called when the player stops using an Item (stops holding the right mouse button).
      */
      public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerentity, Hand handIn) {
-        ItemStack itemstack = playerentity.getHeldItem(handIn);
+        ItemStack stack = playerentity.getHeldItem(handIn);
+
+        ItemStack itemstack = playerentity.findAmmo(stack);
         boolean flag = playerentity.abilities.isCreativeMode || EnchantmentHelper.getEnchantmentLevel(Enchantments.INFINITY, itemstack) > 0;
 
         if (!itemstack.isEmpty() || flag) {
@@ -48,7 +56,9 @@ public class RailgunItem extends Item {
                     BaconItem baconItem = (BaconItem) (itemstack.getItem() instanceof BaconItem ? itemstack.getItem() : new BaconItem());
                     LOGGER.info("Bacon created");
                     AbstractArrowEntity abstractarrowentity = baconItem.createBacon(worldIn, itemstack, playerentity);
-                    abstractarrowentity.shoot(playerentity, playerentity.rotationPitch, playerentity.rotationYaw, 0.0F, f * 3.0F, 1.0F);
+                    abstractarrowentity.shoot(playerentity.getLookVec().x, playerentity.getLookVec().y, playerentity.getLookVec().z, 300F, 0F);
+                    this.playBaconRailgunSound(worldIn, playerentity);
+                    LOGGER.info("Bacon sound played");
                     abstractarrowentity = customeArrow(abstractarrowentity);
                     if (f == 1.0F) {
                         abstractarrowentity.setIsCritical(true);
@@ -57,33 +67,36 @@ public class RailgunItem extends Item {
                     itemstack.damageItem(1, playerentity, (p_220009_1_) -> {
                         p_220009_1_.sendBreakAnimation(playerentity.getActiveHand());
                     });
-                    if (flag1 || playerentity.abilities.isCreativeMode && (itemstack.getItem() == Items.SPECTRAL_ARROW || itemstack.getItem() == Items.TIPPED_ARROW)) {
-                        abstractarrowentity.pickupStatus = AbstractArrowEntity.PickupStatus.CREATIVE_ONLY;
-                    }
-
                     worldIn.addEntity(abstractarrowentity);
                 }
-
-                worldIn.playSound((PlayerEntity)null, playerentity.getPosX(), playerentity.getPosY(), playerentity.getPosZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (random.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
                 if (!flag1 && !playerentity.abilities.isCreativeMode) {
                     itemstack.shrink(1);
                     if (itemstack.isEmpty()) {
                         playerentity.inventory.deleteStack(itemstack);
                     }
                 }
-
                 playerentity.addStat(Stats.ITEM_USED.get(this));
             }
+
         }
          if (!playerentity.abilities.isCreativeMode && !flag) {
-             return ActionResult.resultFail(itemstack);
+             return ActionResult.resultFail(stack);
          } else {
-             playerentity.setActiveHand(handIn);
-             LOGGER.info("Bacon success!!");
-             return ActionResult.resultConsume(itemstack);
+             return ActionResult.resultConsume(stack);
          }
 
      }
+    private void playBaconRailgunSound(World worldIn, PlayerEntity player) {
+        SoundEvent soundevent = new SoundEvent(new ResourceLocation("kidvkid", "bacon_railgun_sound"));
+        worldIn.playSound((PlayerEntity)null, player.getPosX(), player.getPosY(), player.getPosZ(), soundevent, SoundCategory.PLAYERS, 1F, 1.0F);
+    }
+
+    /**
+     * Get the predicate to match ammunition when searching the player's inventory, not their main/offhand
+     */
+    public Predicate<ItemStack> getInventoryAmmoPredicate() {
+        return BACON;
+    }
 
     public AbstractArrowEntity customeArrow(AbstractArrowEntity arrow) {
         return arrow;
