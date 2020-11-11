@@ -24,11 +24,11 @@ public class SmokeTrailParticle extends SpriteTexturedParticle {
         this.particleGreen = f;
         this.particleBlue = f;
         this.particleScale *= 0.75F * p_i51010_14_;
-        this.maxAge = (int)(100.0D);
+        this.maxAge = (int)(80.0D);
         this.selectSpriteWithAge(p_i51010_15_);
     }
     public IParticleRenderType getRenderType() {
-        return IParticleRenderType.PARTICLE_SHEET_OPAQUE;
+        return IParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
     public float getScale(float scaleFactor) {

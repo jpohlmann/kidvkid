@@ -1,8 +1,8 @@
 package com.example.kidvkid.entity;
 
 import com.example.kidvkid.init.ModEntityTypes;
+import com.example.kidvkid.init.ModItems;
 import com.example.kidvkid.init.ModParticles;
-import com.example.kidvkid.item.BaconItem;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -17,20 +17,21 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
 
 public class BaconEntity extends AbstractArrowEntity {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static final double PARTICLES = 100;
+    public static final double PARTICLES = 10;
     private ItemStack arrowStack;
     private DoublePos startingPoint;
     protected BlockState inBlockState;
     protected MatrixStack hitEntities;
+    protected Vec3d hitLocation;
     protected MatrixStack piercedEntities;
     protected SoundEvent splatSoundEvent;
     public BaconEntity(EntityType<? extends com.example.kidvkid.entity.BaconEntity> type, World worldIn) {
@@ -74,9 +75,6 @@ public class BaconEntity extends AbstractArrowEntity {
     public BaconEntity(World worldIn, LivingEntity shooter) {
         this(ModEntityTypes.BACON_ENTITY.get(), shooter.getPosX(), shooter.getPosYEye() - (double)0.4F, shooter.getPosZ(), worldIn);
         this.setShooter(shooter);
-        if (shooter instanceof PlayerEntity) {
-            this.pickupStatus = AbstractArrowEntity.PickupStatus.ALLOWED;
-        }
         this.startingPoint = new DoublePos(shooter.getPosX(), shooter.getPosYEye() - (double)0.4F, shooter.getPosZ());
         if (this.splatSoundEvent == null) {
             this.splatSoundEvent = new SoundEvent(new ResourceLocation("kidvkid", "bacon_hit_sound"));
@@ -94,37 +92,21 @@ public class BaconEntity extends AbstractArrowEntity {
     }
 
     protected ItemStack getArrowStack() {
-        return new ItemStack(BaconItem::new);
-    }
-
-    private DoublePos getDoublePosition() {
-        return new DoublePos(
-                this.getPosX(),
-                this.getPosY(),
-                this.getPosZ()
-        );
-    }
-    /**
-     * Called to update the entity's position/logic.
-     */
-    public void tick() {
-        if (!this.inGround)  {
-            //this.spawnSmokeTrail(this.getDoublePosition());
-        }
-        super.tick();
+        LOGGER.info("picked up some bacon");
+        return new ItemStack(ModItems.BACON.get());
     }
 
     private void spawnSmokeTrail(DoublePos pos) {
-        double d0 = (double)0.1D;
-        double d1 = (double)0.1D;
-        double d2 = (double)0.1D;
+        double d0 = (double)0D;
+        double d1 = (double)0D;
+        double d2 = (double)0D;
         try {
             try {
                 DoublePos curTrailPos = this.startingPoint.clone();
                 IntervalDifferences differences = new IntervalDifferences(pos, this.startingPoint);
                 for(int j = 0; j < PARTICLES; ++j) {
                     curTrailPos = differences.getNextPosition(curTrailPos);
-                    this.world.addParticle(ModParticles.SMOKE_TRAIL, true, curTrailPos.getX(), curTrailPos.getY(), curTrailPos.getZ(), d0, d1, d2);
+                    this.world.getServer().getWorld(DimensionType.OVERWORLD).spawnParticle(ModParticles.SMOKE_TRAIL, curTrailPos.getX(), curTrailPos.getY(), curTrailPos.getZ(), 1, d0, d1, d2, 0);
                 }
             } catch (CloneNotSupportedException e) {
                 return;
@@ -138,7 +120,6 @@ public class BaconEntity extends AbstractArrowEntity {
      * Called when the arrow hits a block or an entity
      */
     protected void onHit(RayTraceResult raytraceResultIn) {
-        LOGGER.info("spawned trail");
         RayTraceResult.Type raytraceresult$type = raytraceResultIn.getType();
         if (raytraceresult$type == RayTraceResult.Type.ENTITY) {
             EntityRayTraceResult entityResult = (EntityRayTraceResult)raytraceResultIn;
@@ -147,18 +128,27 @@ public class BaconEntity extends AbstractArrowEntity {
             this.setMotion(vec3d);
             Vec3d vec3d1 = vec3d.normalize().scale((double)0.05F);
             this.setRawPosition(this.getPosX() - vec3d1.x, this.getPosY() - vec3d1.y, this.getPosZ() - vec3d1.z);
-            this.spawnSmokeTrail(new DoublePos(this.getPosX(), this.getPosY(), this.getPosZ()));
-            this.setPierceLevel((byte)127);
+
+            if (!this.world.isRemote) {
+                this.spawnSmokeTrail(new DoublePos(entityResult.getHitVec()));
+            }
             this.onEntityHit((EntityRayTraceResult)raytraceResultIn);
         } else if (raytraceresult$type == RayTraceResult.Type.BLOCK) {
             BlockRayTraceResult blockraytraceresult = (BlockRayTraceResult)raytraceResultIn;
             BlockState blockstate = this.world.getBlockState(blockraytraceresult.getPos());
+
+            if (!this.world.isRemote) {
+                this.spawnSmokeTrail(new DoublePos(
+                        blockraytraceresult.getHitVec()
+                ));
+            }
+
             this.inBlockState = blockstate;
             Vec3d vec3d = blockraytraceresult.getHitVec().subtract(this.getPosX(), this.getPosY(), this.getPosZ());
             this.setMotion(vec3d);
             Vec3d vec3d1 = vec3d.normalize().scale((double)0.05F);
             this.setRawPosition(this.getPosX() - vec3d1.x, this.getPosY() - vec3d1.y, this.getPosZ() - vec3d1.z);
-            this.spawnSmokeTrail(new DoublePos(this.getPosX(), this.getPosY(), this.getPosZ()));
+
             this.inGround = true;
             this.arrowShake = 7;
             this.setIsCritical(false);
