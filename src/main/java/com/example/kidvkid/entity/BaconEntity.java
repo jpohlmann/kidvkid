@@ -26,12 +26,13 @@ import org.apache.logging.log4j.Logger;
 public class BaconEntity extends AbstractArrowEntity {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static final double PARTICLES = 10;
+    public static final double PARTICLES = 20;
     private ItemStack arrowStack;
     private DoublePos startingPoint;
     protected BlockState inBlockState;
     protected MatrixStack hitEntities;
     protected Vec3d hitLocation;
+    private double damage = 0.2D;
     protected MatrixStack piercedEntities;
     protected SoundEvent splatSoundEvent;
     public BaconEntity(EntityType<? extends com.example.kidvkid.entity.BaconEntity> type, World worldIn) {
@@ -132,6 +133,7 @@ public class BaconEntity extends AbstractArrowEntity {
             if (!this.world.isRemote) {
                 this.spawnSmokeTrail(new DoublePos(entityResult.getHitVec()));
             }
+            this.setDamage(0.4D);
             this.onEntityHit((EntityRayTraceResult)raytraceResultIn);
         } else if (raytraceresult$type == RayTraceResult.Type.BLOCK) {
             BlockRayTraceResult blockraytraceresult = (BlockRayTraceResult)raytraceResultIn;
